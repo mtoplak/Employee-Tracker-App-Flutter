@@ -1,4 +1,4 @@
-# rvir_flutter
+# Employee Tracker App
 
 A new Flutter project.
 
