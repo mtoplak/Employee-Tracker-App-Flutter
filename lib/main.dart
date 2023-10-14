@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rvir_flutter/employee_list_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -91,7 +92,16 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
         selectedArrivalTime = null;
         selectedDepartureTime = null;
       });
+      _navigateToEmployeeList();
     }
+  }
+
+  void _navigateToEmployeeList() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EmployeeListScreen(employees: widget.employees),
+      ),
+    );
   }
 
   @override
@@ -100,97 +110,110 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
       appBar: AppBar(
         title: Text('Vnos zaposlenih 👷‍♂️'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: 'Ime'),
-            ),
-            TextField(
-              controller: surnameController,
-              decoration: InputDecoration(labelText: 'Priimek'),
-            ),
-            DropdownButtonFormField<String>(
-              value: selectedJob,
-              onChanged: (newValue) {
-                setState(() {
-                  selectedJob = newValue;
-                });
-              },
-              items: <String>[
-                'Hišnik',
-                'Vodja',
-                'Prodajalec',
-              ].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-              decoration: InputDecoration(labelText: 'Delovno mesto'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final selectedDate = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                );
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: nameController,
+                    decoration: InputDecoration(labelText: 'Ime'),
+                  ),
+                  TextField(
+                    controller: surnameController,
+                    decoration: InputDecoration(labelText: 'Priimek'),
+                  ),
+                  DropdownButtonFormField<String>(
+                    value: selectedJob,
+                    onChanged: (newValue) {
+                      setState(() {
+                        selectedJob = newValue;
+                      });
+                    },
+                    items: <String>[
+                      'Hišnik',
+                      'Vodja',
+                      'Prodajalec',
+                    ].map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),
+                    decoration: InputDecoration(labelText: 'Delovno mesto'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      final selectedDate = await showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime.now(),
+                      );
 
-                if (selectedDate != null) {
-                  setState(() {
-                    selectedBirthDate = selectedDate;
-                  });
-                }
-              },
-              child: Text(selectedBirthDate != null
-                  ? 'Datum rojstva: ${selectedBirthDate!.toLocal()}'
-                  : 'Datum rojstva'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final selectedTime = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.now(),
-                );
+                      if (selectedDate != null) {
+                        setState(() {
+                          selectedBirthDate = selectedDate;
+                        });
+                      }
+                    },
+                    child: Text(selectedBirthDate != null
+                        ? 'Datum rojstva: ${selectedBirthDate!.toLocal()}'
+                        : 'Datum rojstva'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      final selectedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
 
-                if (selectedTime != null) {
-                  setState(() {
-                    selectedArrivalTime = selectedTime;
-                  });
-                }
-              },
-              child: Text(selectedArrivalTime != null
-                  ? 'Ura prihoda: ${selectedArrivalTime!.format(context)}'
-                  : 'Uro prihoda'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final selectedTime = await showTimePicker(
-                  context: context,
-                  initialTime: TimeOfDay.now(),
-                );
+                      if (selectedTime != null) {
+                        setState(() {
+                          selectedArrivalTime = selectedTime;
+                        });
+                      }
+                    },
+                    child: Text(selectedArrivalTime != null
+                        ? 'Ura prihoda: ${selectedArrivalTime!.format(context)}'
+                        : 'Uro prihoda'),
+                  ),
+                  TextButton(
+                    onPressed: () async {
+                      final selectedTime = await showTimePicker(
+                        context: context,
+                        initialTime: TimeOfDay.now(),
+                      );
 
-                if (selectedTime != null) {
-                  setState(() {
-                    selectedDepartureTime = selectedTime;
-                  });
-                }
-              },
-              child: Text(selectedDepartureTime != null
-                  ? 'Ura odhoda: ${selectedDepartureTime!.format(context)}'
-                  : 'Uro odhoda'),
+                      if (selectedTime != null) {
+                        setState(() {
+                          selectedDepartureTime = selectedTime;
+                        });
+                      }
+                    },
+                    child: Text(selectedDepartureTime != null
+                        ? 'Ura odhoda: ${selectedDepartureTime!.format(context)}'
+                        : 'Uro odhoda'),
+                  ),
+                  ElevatedButton(
+                    onPressed: _addEmployee,
+                    child: Text('Dodaj zaposlenega'),
+                  ),
+                ],
+              ),
             ),
-            ElevatedButton(
-              onPressed: _addEmployee,
-              child: Text('Dodaj zaposlenega'),
+          ),
+          Container(
+            width: double.infinity, // Make it full width
+            child: ElevatedButton(
+              onPressed: _navigateToEmployeeList,
+              child: Text('Prikaži seznam zaposlenih'),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
