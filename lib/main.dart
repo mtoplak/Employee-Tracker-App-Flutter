@@ -1,30 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:rvir_flutter/employee_list_screen.dart';
+import 'package:rvir_flutter/models/employee.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(EmployeeAdapter());
+  await Hive.openBox<Employee>('employees');
   runApp(MyApp());
 }
 
-class Employee {
-  final String name;
-  final String surname;
-  final String job;
-  final DateTime birthDate;
-  final TimeOfDay arrivalTime;
-  final TimeOfDay departureTime;
+// class Employee {
+//   final String name;
+//   final String surname;
+//   final String job;
+//   final DateTime birthDate;
+//   final TimeOfDay arrivalTime;
+//   final TimeOfDay departureTime;
 
-  Employee({
-    required this.name,
-    required this.surname,
-    required this.job,
-    required this.birthDate,
-    required this.arrivalTime,
-    required this.departureTime,
-  });
-}
+//   Employee({
+//     required this.name,
+//     required this.surname,
+//     required this.job,
+//     required this.birthDate,
+//     required this.arrivalTime,
+//     required this.departureTime,
+//   });
+// }
 
 class MyApp extends StatelessWidget {
-  //  const MyApp({super.key});
+  //const MyApp({super.key});
   final List<Employee> employees = [];
 
   @override
@@ -53,7 +58,7 @@ class MyApp extends StatelessWidget {
 class EmployeeEntryScreen extends StatefulWidget {
   final List<Employee> employees;
 
-  EmployeeEntryScreen({required this.employees});
+  const EmployeeEntryScreen({super.key, required this.employees});
 
   @override
   _EmployeeEntryScreenState createState() => _EmployeeEntryScreenState();
@@ -79,8 +84,8 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
         surname: surnameController.text,
         job: selectedJob!,
         birthDate: selectedBirthDate!,
-        arrivalTime: selectedArrivalTime!,
-        departureTime: selectedDepartureTime!,
+        arrivalTime: selectedArrivalTime.toString(),
+        departureTime: selectedDepartureTime.toString(),
       );
 
       setState(() {
@@ -108,23 +113,23 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vnos zaposlenih 👷‍♂️'),
+        title: const Text('Vnos zaposlenih 👷‍♂️'),
       ),
       body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextField(
                     controller: nameController,
-                    decoration: InputDecoration(labelText: 'Ime'),
+                    decoration: const InputDecoration(labelText: 'Ime'),
                   ),
                   TextField(
                     controller: surnameController,
-                    decoration: InputDecoration(labelText: 'Priimek'),
+                    decoration: const InputDecoration(labelText: 'Priimek'),
                   ),
                   DropdownButtonFormField<String>(
                     value: selectedJob,
@@ -143,7 +148,8 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
                         child: Text(value),
                       );
                     }).toList(),
-                    decoration: InputDecoration(labelText: 'Delovno mesto'),
+                    decoration:
+                        const InputDecoration(labelText: 'Delovno mesto'),
                   ),
                   TextButton(
                     onPressed: () async {
@@ -179,7 +185,7 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
                     },
                     child: Text(selectedArrivalTime != null
                         ? 'Ura prihoda: ${selectedArrivalTime!.format(context)}'
-                        : 'Uro prihoda'),
+                        : 'Ura prihoda'),
                   ),
                   TextButton(
                     onPressed: () async {
@@ -196,21 +202,21 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
                     },
                     child: Text(selectedDepartureTime != null
                         ? 'Ura odhoda: ${selectedDepartureTime!.format(context)}'
-                        : 'Uro odhoda'),
+                        : 'Ura odhoda'),
                   ),
                   ElevatedButton(
                     onPressed: _addEmployee,
-                    child: Text('Dodaj zaposlenega'),
+                    child: const Text('Dodaj zaposlenega'),
                   ),
                 ],
               ),
             ),
           ),
-          Container(
+          SizedBox(
             width: double.infinity, // Make it full width
             child: ElevatedButton(
               onPressed: _navigateToEmployeeList,
-              child: Text('Prikaži seznam zaposlenih'),
+              child: const Text('Prikaži seznam zaposlenih'),
             ),
           ),
         ],
