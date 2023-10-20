@@ -10,27 +10,8 @@ void main() async {
   runApp(MyApp());
 }
 
-// class Employee {
-//   final String name;
-//   final String surname;
-//   final String job;
-//   final DateTime birthDate;
-//   final TimeOfDay arrivalTime;
-//   final TimeOfDay departureTime;
-
-//   Employee({
-//     required this.name,
-//     required this.surname,
-//     required this.job,
-//     required this.birthDate,
-//     required this.arrivalTime,
-//     required this.departureTime,
-//   });
-// }
-
 class MyApp extends StatelessWidget {
   //const MyApp({super.key});
-  final List<Employee> employees = [];
 
   @override
   Widget build(BuildContext context) {
@@ -50,15 +31,14 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: EmployeeEntryScreen(employees: employees),
+      home: EmployeeEntryScreen(),
     );
   }
 }
 
 class EmployeeEntryScreen extends StatefulWidget {
-  final List<Employee> employees;
 
-  const EmployeeEntryScreen({super.key, required this.employees});
+  const EmployeeEntryScreen({super.key});
 
   @override
   _EmployeeEntryScreenState createState() => _EmployeeEntryScreenState();
@@ -72,7 +52,14 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
   TimeOfDay? selectedArrivalTime;
   TimeOfDay? selectedDepartureTime;
 
-  void _addEmployee() {
+  @override
+  void dispose() {
+    nameController.dispose();
+    surnameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _addEmployee() async {
     if (nameController.text.isNotEmpty &&
         surnameController.text.isNotEmpty &&
         selectedJob != null &&
@@ -88,8 +75,10 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
         departureTime: selectedDepartureTime.toString(),
       );
 
+      final employeesBox = Hive.box<Employee>('employees');
+      employeesBox.add(newEmployee);
+
       setState(() {
-        widget.employees.add(newEmployee);
         nameController.clear();
         surnameController.clear();
         selectedJob = null;
@@ -98,14 +87,35 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
         selectedDepartureTime = null;
       });
       _navigateToEmployeeList();
+      _showSuccessDialog();
     }
   }
 
   void _navigateToEmployeeList() {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => EmployeeListScreen(employees: widget.employees),
+        builder: (context) => EmployeeListScreen(),
       ),
+    );
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Success'),
+          content: const Text('Employee has been added.'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
