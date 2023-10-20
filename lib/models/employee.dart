@@ -5,19 +5,23 @@ part 'employee.g.dart';
 @HiveType(typeId: 0)
 class Employee {
   @HiveField(0)
-  final String name;
+  int id;
+
   @HiveField(1)
-  final String surname;
+  String name;
   @HiveField(2)
-  final String job;
+  String surname;
   @HiveField(3)
-  final DateTime birthDate;
+  String job;
   @HiveField(4)
-  final String arrivalTime;
+  DateTime birthDate;
   @HiveField(5)
-  final String departureTime;
+  String arrivalTime;
+  @HiveField(6)
+  String departureTime;
 
   Employee({
+    required this.id,
     required this.name,
     required this.surname,
     required this.job,

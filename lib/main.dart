@@ -31,13 +31,12 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: EmployeeEntryScreen(),
+      home: const EmployeeEntryScreen(),
     );
   }
 }
 
 class EmployeeEntryScreen extends StatefulWidget {
-
   const EmployeeEntryScreen({super.key});
 
   @override
@@ -66,7 +65,21 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
         selectedBirthDate != null &&
         selectedArrivalTime != null &&
         selectedDepartureTime != null) {
+      final employeesBox = Hive.box<Employee>('employees');
+      int highestId = 0;
+
+      if (employeesBox.isNotEmpty) {
+        highestId =
+            employeesBox.keys.cast<int>().reduce((a, b) => a > b ? a : b);
+      }
+
+      // Increment the highestId to get the next available ID
+      int nextEmployeeId = highestId + 1;
+
+      debugPrint(nextEmployeeId.toString());
+
       final newEmployee = Employee(
+        id: nextEmployeeId,
         name: nameController.text,
         surname: surnameController.text,
         job: selectedJob!,
@@ -75,7 +88,6 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
         departureTime: selectedDepartureTime.toString(),
       );
 
-      final employeesBox = Hive.box<Employee>('employees');
       employeesBox.add(newEmployee);
 
       setState(() {
