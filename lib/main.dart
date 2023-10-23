@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rvir_flutter/employee_list_screen.dart';
 import 'package:rvir_flutter/models/employee.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
 
 void main() async {
   await Hive.initFlutter();
@@ -75,8 +76,6 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
 
       // Increment the highestId to get the next available ID
       int nextEmployeeId = highestId + 1;
-
-      debugPrint(nextEmployeeId.toString());
 
       final newEmployee = Employee(
         id: nextEmployeeId,
@@ -189,7 +188,7 @@ class _EmployeeEntryScreenState extends State<EmployeeEntryScreen> {
                       }
                     },
                     child: Text(selectedBirthDate != null
-                        ? 'Datum rojstva: ${selectedBirthDate!.toLocal()}'
+                        ? 'Datum rojstva: ${DateFormat('yyyy-MM-dd').format(selectedBirthDate!)}'
                         : 'Datum rojstva'),
                   ),
                   TextButton(
